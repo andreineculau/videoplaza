@@ -1,0 +1,60 @@
+#!/usr/bin/env coffee
+
+fs = require 'fs'
+_ = require 'lodash'
+
+readContext = (inputFile) ->
+  [
+    availableImpressions
+    campaigns...
+  ] = fs.readFileSync(inputFile, 'utf8').split '\n'
+
+  availableImpressions = Number availableImpressions
+  campaigns.pop()
+  campaigns = campaigns.map (id) ->
+    [
+      customerName
+      impressions
+      revenue
+    ] = id.split ','
+    impressions = Number impressions
+    revenue = Number revenue
+    {
+      id
+      customerName
+      impressions
+      revenue
+    }
+
+  {
+    availableImpressions
+    campaigns
+  }
+
+
+write = (solution) ->
+  results = {}
+  for campaign in solution.campaigns
+    result = results[campaign.id] ?=
+      customerName: campaign.customerName
+      campaigns: 0
+      totalImpressions: 0
+      totalRevenue: 0
+    result.campaigns += 1
+    result.totalImpressions += campaign.impressions
+    result.totalRevenue += campaign.revenue
+  for id, result of results
+    {
+      customerName
+      campaigns
+      totalImpressions
+      totalRevenue
+    } = result
+    console.log "#{customerName},#{campaigns},#{totalImpressions},#{totalRevenue}"
+  console.log "#{solution.totalImpressions},#{solution.totalRevenue}"
+
+
+context = readContext process.argv[2]
+algo = require (process.argv[3] or './algo3')
+goal = require (process.argv[4] or './goal1')
+write algo {context, goal}
