@@ -45,4 +45,5 @@ module.exports = ({context, goal}) ->
       return  if canExit
   solution
 
-module.exports = _.memoize module.exports
+module.exports = _.memoize module.exports, ({context, goal}) ->
+  context.availableImpressions.toString() + goal.name
